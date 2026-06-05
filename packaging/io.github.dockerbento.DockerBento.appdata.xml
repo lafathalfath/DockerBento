@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.dockerbento.DockerBento</id>
+  <name>DockerBento</name>
+  <summary>Manage Docker containers, images, volumes and networks</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <description>
+    <p>
+      DockerBento is a desktop Linux application for managing Docker resources locally.
+      It communicates directly with the Docker daemon via Unix socket and provides a
+      dark-themed UI for managing containers, images, volumes, and networks.
+    </p>
+    <ul>
+      <li>List, start, stop, restart, pause, and remove containers</li>
+      <li>View container logs in real-time with streaming support</li>
+      <li>Run new containers from images with full configuration</li>
+      <li>Manage images, volumes, and networks with prune support</li>
+      <li>Auto-refresh with smart diff updates to avoid screen flicker</li>
+      <li>Configurable Docker connection (Unix socket or TCP)</li>
+    </ul>
+  </description>
+  <!-- TODO: update with real repository URL before publishing to Flathub -->
+  <url type="homepage">https://github.com/YOUR_USERNAME/DockerBento</url>
+  <url type="bugtracker">https://github.com/YOUR_USERNAME/DockerBento/issues</url>
+  <developer id="io.github.dockerbento">
+    <name>DockerBento Contributors</name>
+  </developer>
+  <launchable type="desktop-id">io.github.dockerbento.DockerBento.desktop</launchable>
+  <releases>
+    <release version="1.0.0" date="2026-06-05">
+      <description>
+        <p>Initial release.</p>
+      </description>
+    </release>
+  </releases>
+  <content_rating type="oars-1.1"/>
+  <requires>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </requires>
+</component>

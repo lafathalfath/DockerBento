@@ -1,0 +1,50 @@
+# Build
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.o
+*.a
+*.so
+*.dylib
+moc_*
+qrc_*
+ui_*
+*_autogen/
+
+# Binaries
+DockerBento
+build-release/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.cache/
+compile_commands.json
+
+# Qt Creator
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+*.qmlc
+*.jsc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code
+.claude/
+
+# Packaging artifacts (build outputs and downloaded tools)
+AppDir/
+build-flatpak/
+squashfs-root/
+*.AppImage

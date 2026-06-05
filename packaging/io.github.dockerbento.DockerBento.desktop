@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=DockerBento
+Comment=Manage Docker containers, images, volumes and networks
+Exec=DockerBento
+Icon=io.github.dockerbento.DockerBento
+Type=Application
+Categories=System;
+Keywords=docker;container;image;volume;network;
+StartupNotify=true
+StartupWMClass=DockerBento

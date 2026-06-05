@@ -1,0 +1,37 @@
+app-id: io.github.dockerbento.DockerBento
+runtime: org.kde.Platform
+runtime-version: '6.9'
+sdk: org.kde.Sdk/x86_64/6.9
+command: DockerBento
+
+# DockerBento needs access to the Docker Unix socket.
+# Users must grant this socket access explicitly:
+#   flatpak override --user --filesystem=/run/user/$UID/docker.sock io.github.dockerbento.DockerBento
+#   flatpak override --user --filesystem=/var/run/docker.sock io.github.dockerbento.DockerBento
+finish-args:
+  - --share=ipc
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  # Docker socket (rootless — most common setup)
+  - --filesystem=/run/user/1000/docker.sock:ro
+  # Docker socket (root daemon)
+  - --filesystem=/var/run/docker.sock:ro
+  # Persist settings in ~/.var/app/...
+  - --filesystem=home:ro  # for custom socket paths the user might enter
+
+modules:
+  - name: DockerBento
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+    sources:
+      - type: dir
+        path: ..
+    post-install:
+      - install -Dm644 packaging/io.github.dockerbento.DockerBento.desktop
+          /app/share/applications/io.github.dockerbento.DockerBento.desktop
+      - install -Dm644 packaging/io.github.dockerbento.DockerBento.appdata.xml
+          /app/share/metainfo/io.github.dockerbento.DockerBento.appdata.xml
+      - install -Dm644 resources/icons/dockerbento.png
+          /app/share/icons/hicolor/256x256/apps/io.github.dockerbento.DockerBento.png

@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_DockerBento_FILE /home/roxy/Projects/DockerBento/build-debug/DockerBento)
+set(__QT_DEPLOY_TARGET_DockerBento_TYPE EXECUTABLE)

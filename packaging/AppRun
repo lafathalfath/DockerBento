@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# AppRun — sets up Qt environment variables so Qt can find its plugins and
+# libraries inside the AppImage, regardless of the mount point.
+#
+# $APPDIR is set by the AppImage runtime to the mount point of the AppImage.
+
+HERE="${APPDIR:-"$(dirname "$(readlink -f "$0")")"}"
+
+export LD_LIBRARY_PATH="$HERE/usr/lib:${LD_LIBRARY_PATH:-}"
+export QT_PLUGIN_PATH="$HERE/usr/plugins"
+export QT_QPA_PLATFORM_PLUGIN_PATH="$HERE/usr/plugins/platforms"
+export QML2_IMPORT_PATH="$HERE/usr/qml"
+export QT_XKB_CONFIG_ROOT="${QT_XKB_CONFIG_ROOT:-/usr/share/X11/xkb}"
+
+# Prefer wayland if compositor is available, fall back to xcb
+if [ -n "$WAYLAND_DISPLAY" ] && [ -f "$HERE/usr/plugins/platforms/libqwayland.so" ]; then
+    export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-wayland;xcb}"
+else
+    export QT_QPA_PLATFORM="${QT_QPA_PLATFORM:-xcb}"
+fi
+
+exec "$HERE/usr/bin/DockerBento" "$@"
