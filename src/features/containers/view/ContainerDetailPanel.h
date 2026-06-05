@@ -8,6 +8,7 @@
 namespace Features::Containers {
 
 class ContainerLogsView;
+class ContainerTerminalView;
 
 class ContainerDetailPanel : public QWidget {
     Q_OBJECT
@@ -32,6 +33,7 @@ private:
     QLabel *m_portsLabel{nullptr};
     QTabWidget *m_tabs{nullptr};
     ContainerLogsView *m_logsView{nullptr};
+    ContainerTerminalView *m_terminalView{nullptr};
     QWidget *m_infoPage{nullptr};
 };
 

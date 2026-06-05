@@ -1,5 +1,6 @@
 #include "ContainerDetailPanel.h"
 #include "ContainerLogsView.h"
+#include "ContainerTerminalView.h"
 #include "shared/widgets/StatusBadge.h"
 #include <QVBoxLayout>
 #include <QFormLayout>
@@ -91,11 +92,18 @@ void ContainerDetailPanel::setupUi() {
 
     // Logs tab
     m_logsView = new ContainerLogsView(m_vm);
+
+    // Terminal tab
+    m_terminalView = new ContainerTerminalView;
+
     m_tabs->addTab(scrollArea, "Info");
     m_tabs->addTab(m_logsView, "Logs");
+    m_tabs->addTab(m_terminalView, "Terminal");
+
+    m_tabs->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     root->addWidget(header);
-    root->addWidget(m_tabs);
+    root->addWidget(m_tabs, 1);
 }
 
 void ContainerDetailPanel::showContainer(const Core::Container &container) {
@@ -104,10 +112,12 @@ void ContainerDetailPanel::showContainer(const Core::Container &container) {
     m_idLabel->setText(container.shortId);
     m_vm->load(container);
     m_logsView->attachContainer(container);
+    m_terminalView->attachContainer(container);
 }
 
 void ContainerDetailPanel::clearAndHide() {
     m_vm->stopLogStream();
+    m_terminalView->stopSession();
     setVisible(false);
 }
 

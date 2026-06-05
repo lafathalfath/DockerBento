@@ -96,4 +96,24 @@ void ContainerRepository::streamLogs(const QString &id, LogsCallback callback) {
     m_client->streamGet(path, callback);
 }
 
+void ContainerRepository::execCreate(const QString &containerId, const QString &shell,
+                                     std::function<void(bool, QString, QString)> callback)
+{
+    QJsonObject body;
+    body["AttachStdin"] = true;
+    body["AttachStdout"] = true;
+    body["AttachStderr"] = true;
+    body["Tty"] = true;
+    body["Cmd"] = QJsonArray{shell};
+
+    QString path = QString("/v1.41/containers/%1/exec").arg(containerId);
+    m_client->postJson(path, QJsonDocument(body),
+        [callback](bool ok, const QJsonDocument &doc, const QString &err) {
+            if (!ok) { callback(false, {}, err); return; }
+            QString execId = doc.object()["Id"].toString();
+            if (execId.isEmpty()) { callback(false, {}, "No exec ID in response"); return; }
+            callback(true, execId, {});
+        });
+}
+
 } // namespace Features::Containers
