@@ -31,6 +31,9 @@ public:
     void getLogs(const QString &id, int tail, LogsCallback callback);
     void streamLogs(const QString &id, LogsCallback callback);
 
+    void execCreate(const QString &containerId, const QString &shell,
+                    std::function<void(bool ok, QString execId, QString error)> callback);
+
 private:
     Core::DockerClient *m_client;
 };

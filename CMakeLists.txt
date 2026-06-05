@@ -15,6 +15,9 @@ find_package(Qt6 REQUIRED COMPONENTS
     Concurrent
 )
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(QTERMWIDGET REQUIRED qtermwidget6)
+
 set(SOURCES
     src/main.cpp
 
@@ -43,6 +46,7 @@ set(SOURCES
     src/features/containers/view/ContainerListPage.cpp
     src/features/containers/view/ContainerDetailPanel.cpp
     src/features/containers/view/ContainerLogsView.cpp
+    src/features/containers/view/ContainerTerminalView.cpp
 
     # Images feature
     src/features/images/model/ImageRepository.cpp
@@ -87,6 +91,7 @@ set(HEADERS
     src/features/containers/view/ContainerListPage.h
     src/features/containers/view/ContainerDetailPanel.h
     src/features/containers/view/ContainerLogsView.h
+    src/features/containers/view/ContainerTerminalView.h
 
     src/features/images/model/ImageRepository.h
     src/features/images/viewmodel/ImageListViewModel.h
@@ -109,7 +114,7 @@ set(HEADERS
 
 add_executable(DockerBento ${SOURCES} ${HEADERS} resources/resources.qrc)
 
-target_include_directories(DockerBento PRIVATE src)
+target_include_directories(DockerBento PRIVATE src ${QTERMWIDGET_INCLUDE_DIRS})
 
 target_link_libraries(DockerBento PRIVATE
     Qt6::Core
@@ -117,6 +122,7 @@ target_link_libraries(DockerBento PRIVATE
     Qt6::Widgets
     Qt6::Network
     Qt6::Concurrent
+    ${QTERMWIDGET_LIBRARIES}
 )
 
 install(TARGETS DockerBento DESTINATION bin)
