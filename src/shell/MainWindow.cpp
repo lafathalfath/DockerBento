@@ -15,6 +15,9 @@
 #include "features/networks/viewmodel/NetworkListViewModel.h"
 #include "features/networks/view/NetworkListPage.h"
 #include "features/settings/view/SettingsDialog.h"
+#include "features/hub/model/HubRepository.h"
+#include "features/hub/viewmodel/HubSearchViewModel.h"
+#include "features/hub/view/HubSearchPage.h"
 #include <QHBoxLayout>
 #include <QWidget>
 #include <QJsonDocument>
@@ -102,10 +105,19 @@ void MainWindow::wireFeatures() {
     m_networkListVm = new Features::Networks::NetworkListViewModel(m_networkRepo, this);
     m_networkPage   = new Features::Networks::NetworkListPage(m_networkListVm);
 
+    // Hub Catalog
+    m_hubRepo  = new Features::Hub::HubRepository(this);
+    m_hubVm    = new Features::Hub::HubSearchViewModel(m_hubRepo, m_imageRepo, this);
+    m_hubPage  = new Features::Hub::HubSearchPage(m_hubVm);
+
+    connect(m_hubPage, &Features::Hub::HubSearchPage::imagePulled,
+            this, [this]() { m_imageListVm->refresh(); });
+
     m_contentStack->addWidget(m_containerSplitter); // 0
     m_contentStack->addWidget(m_imagePage);          // 1
     m_contentStack->addWidget(m_volumePage);         // 2
     m_contentStack->addWidget(m_networkPage);        // 3
+    m_contentStack->addWidget(m_hubPage);            // 4
 
     connect(m_sidebar, &SidebarWidget::sectionChanged, this, &MainWindow::switchSection);
 }
@@ -116,6 +128,7 @@ void MainWindow::switchSection(Section section) {
         case Section::Images:     m_contentStack->setCurrentIndex(1); break;
         case Section::Volumes:    m_contentStack->setCurrentIndex(2); break;
         case Section::Networks:   m_contentStack->setCurrentIndex(3); break;
+        case Section::Hub:        m_contentStack->setCurrentIndex(4); break;
     }
 }
 

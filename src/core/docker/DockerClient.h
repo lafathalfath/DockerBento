@@ -24,6 +24,7 @@ public:
     void postJson(const QString &path, const QJsonDocument &body, JsonCallback callback);
     void del(const QString &path, PlainCallback callback);
     void streamGet(const QString &path, StreamCallback callback);
+    void streamPost(const QString &path, const QByteArray &body, StreamCallback callback);
 
     bool isConnected() const { return m_connected; }
     QString socketPath() const { return m_socketPath; }

@@ -14,6 +14,7 @@ DockerBento is a Qt6 C++17 desktop application for managing Docker resources loc
 │  │ Images     │  │  │ ImageListPage             │   │ │
 │  │ Volumes    │  │  │ VolumeListPage            │   │ │
 │  │ Networks   │  │  │ NetworkListPage           │   │ │
+│  │ Hub Catalog│  │  │ HubSearchPage             │   │ │
 │  │            │  │  └───────────────────────────┘   │ │
 │  │ ───────────│  │                                  │ │
 │  │ ● Status   │  │  ContainerDetailPanel (splitter) │ │
@@ -53,6 +54,16 @@ Each feature follows a three-layer pattern:
 - **Role**: Qt widgets. Builds UI, connects to ViewModel signals, handles user interaction
 - **Pattern**: Each page is a QWidget with toolbar + ToggleTable. Action columns with inline buttons + dropdown menus. Context menus via right-click
 - **Examples**: `ContainerListPage`, `ContainerDetailPanel`, `ContainerLogsView`
+
+## Hub Catalog Feature
+
+The Hub Catalog feature (`src/features/hub/`) is structurally different from other features because it communicates with the **Docker Hub REST API** (internet) rather than the local Docker daemon.
+
+- **HubRepository** — uses `QNetworkAccessManager` to call `https://hub.docker.com/v2/search/repositories/`. No dependency on `DockerClient`.
+- **HubSearchViewModel** — manages search state, pagination (25 results/page), and delegates pull operations to `Features::Images::ImageRepository` (which uses the local Docker daemon).
+- **HubSearchPage** — search bar, paginated results table, live pull log terminal view.
+
+Pull flow: Hub Catalog → `HubSearchViewModel::pullImage()` → `ImageRepository::pull()` → Docker daemon streams progress back → `HubSearchPage` displays it in a log view.
 
 ## Core Layer
 

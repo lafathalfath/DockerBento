@@ -29,6 +29,11 @@ namespace Features::Networks {
     class NetworkListViewModel;
     class NetworkListPage;
 }
+namespace Features::Hub {
+    class HubRepository;
+    class HubSearchViewModel;
+    class HubSearchPage;
+}
 
 namespace Shell {
 
@@ -73,6 +78,11 @@ private:
     Features::Networks::NetworkRepository *m_networkRepo{nullptr};
     Features::Networks::NetworkListViewModel *m_networkListVm{nullptr};
     Features::Networks::NetworkListPage *m_networkPage{nullptr};
+
+    // Hub Catalog
+    Features::Hub::HubRepository      *m_hubRepo{nullptr};
+    Features::Hub::HubSearchViewModel  *m_hubVm{nullptr};
+    Features::Hub::HubSearchPage       *m_hubPage{nullptr};
 };
 
 } // namespace Shell

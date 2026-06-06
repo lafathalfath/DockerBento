@@ -14,6 +14,7 @@ A desktop Linux application for managing Docker containers, images, volumes, and
 - **Volumes** — List, remove, prune unused
 - **Networks** — List, remove (except built-in bridge/host/none), prune unused
 - **Settings** — Configurable connection (Unix socket or TCP), auto-detect socket path, test connection, persistent settings
+- **Hub Catalog** — Browse and search Docker Hub online. Pull images directly into the local Docker daemon with live progress output
 - **Dark Theme** — Full dark UI with custom color palette
 
 ## Screenshots
@@ -32,17 +33,17 @@ A desktop Linux application for managing Docker containers, images, volumes, and
 
 **Arch Linux:**
 ```bash
-sudo pacman -S cmake qt6-base
+sudo pacman -S cmake qt6-base qtermwidget
 ```
 
 **Ubuntu / Debian:**
 ```bash
-sudo apt install cmake qt6-base-dev libgl1-mesa-dev
+sudo apt install cmake qt6-base-dev libgl1-mesa-dev qtermwidget6-dev
 ```
 
 **Fedora:**
 ```bash
-sudo dnf install cmake qt6-qtbase-devel
+sudo dnf install cmake qt6-qtbase-devel qtermwidget-qt6-devel
 ```
 
 ## Building from Source
@@ -85,6 +86,7 @@ src/
     volumes/          # Volume management
     networks/         # Network management
     settings/         # Connection settings
+    hub/              # Docker Hub catalog (search, browse, pull)
   shared/             # Reusable widgets and utilities
     widgets/          # ToggleTable, StatusBadge, ConfirmDialog, SearchBar
     utils/            # ByteFormatter

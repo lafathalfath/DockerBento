@@ -16,6 +16,13 @@ find_package(Qt6 REQUIRED COMPONENTS
 )
 
 find_package(PkgConfig REQUIRED)
+
+# Ensure pkg-config can find system packages regardless of how CMake is launched
+# (VSCode CMake Extension, IDEs, etc. may not inherit PKG_CONFIG_PATH from the shell)
+if(NOT ENV{PKG_CONFIG_PATH})
+    set(ENV{PKG_CONFIG_PATH} "/usr/lib/pkgconfig:/usr/share/pkgconfig")
+endif()
+
 pkg_check_modules(QTERMWIDGET REQUIRED qtermwidget6)
 
 set(SOURCES
@@ -67,6 +74,12 @@ set(SOURCES
     # Settings feature
     src/features/settings/model/ConnectionSettings.cpp
     src/features/settings/view/SettingsDialog.cpp
+
+    # Hub Catalog feature
+    src/features/hub/model/HubRepository.cpp
+    src/features/hub/viewmodel/HubSearchViewModel.cpp
+    src/features/hub/view/HubSearchPage.cpp
+    src/features/hub/view/HubDetailPage.cpp
 )
 
 set(HEADERS
@@ -110,6 +123,12 @@ set(HEADERS
 
     src/features/settings/model/ConnectionSettings.h
     src/features/settings/view/SettingsDialog.h
+
+    src/features/hub/model/HubRepository.h
+    src/features/hub/viewmodel/HubSearchViewModel.h
+    src/features/hub/view/HubSearchPage.h
+    src/features/hub/view/HubDetailPage.h
+    src/features/hub/view/HubImageCard.h
 )
 
 add_executable(DockerBento ${SOURCES} ${HEADERS} resources/resources.qrc)

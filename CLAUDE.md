@@ -32,6 +32,7 @@ src/
     volumes/      # Volume list, prune
     networks/     # Network list, prune
     settings/     # Connection settings dialog
+    hub/          # Docker Hub catalog: search, browse, pull (uses QNetworkAccessManager)
   shared/         # Reusable widgets (ToggleTable, StatusBadge, SearchBar, ConfirmDialog)
     widgets/
     utils/        # ByteFormatter
@@ -40,7 +41,7 @@ src/
 
 ## Key Conventions
 
-- **Namespaces**: `Core::`, `Features::Containers::`, `Features::Images::`, `Shared::`, `Shell::` — mirror directory structure
+- **Namespaces**: `Core::`, `Features::Containers::`, `Features::Images::`, `Features::Hub::`, `Shared::`, `Shell::` — mirror directory structure
 - **Naming**: PascalCase classes, camelCase methods/variables, `m_` prefix for member variables, UPPER_CASE constants
 - **Headers**: `#pragma once`, forward-declare where possible, minimal includes in headers
 - **Qt patterns**: Q_OBJECT macro on all QObject subclasses, signals/slots for communication, lambda connections preferred
