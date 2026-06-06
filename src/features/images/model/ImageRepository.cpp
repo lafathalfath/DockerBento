@@ -2,6 +2,7 @@
 #include "core/docker/DockerClient.h"
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QUrl>
 
 namespace Features::Images {
 
@@ -34,8 +35,18 @@ void ImageRepository::prune(ActionCallback callback) {
 }
 
 void ImageRepository::pull(const QString &image, std::function<void(const QString &, bool)> callback) {
-    QString path = QString("/v1.41/images/create?fromImage=%1").arg(image);
-    m_client->streamGet(path, callback);
+    // Split "name:tag" into separate query params; percent-encode both.
+    QString name = image;
+    QString tag  = "latest";
+    int colon = image.lastIndexOf(':');
+    if (colon > 0) {
+        name = image.left(colon);
+        tag  = image.mid(colon + 1);
+    }
+    QString path = QString("/v1.41/images/create?fromImage=%1&tag=%2")
+        .arg(QString::fromUtf8(QUrl::toPercentEncoding(name)))
+        .arg(QString::fromUtf8(QUrl::toPercentEncoding(tag)));
+    m_client->streamPost(path, {}, callback);
 }
 
 } // namespace Features::Images

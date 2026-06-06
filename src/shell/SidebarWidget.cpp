@@ -41,6 +41,7 @@ void SidebarWidget::setupUi() {
         {"◈", "Images",     Section::Images},
         {"⬡", "Volumes",    Section::Volumes},
         {"⬢", "Networks",   Section::Networks},
+        {"⊕", "Hub Catalog", Section::Hub},
     };
 
     int id = 0;

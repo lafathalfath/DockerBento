@@ -6,7 +6,7 @@
 
 namespace Shell {
 
-enum class Section { Containers, Images, Volumes, Networks };
+enum class Section { Containers, Images, Volumes, Networks, Hub };
 
 class SidebarWidget : public QWidget {
     Q_OBJECT

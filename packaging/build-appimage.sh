@@ -65,10 +65,60 @@ export QMAKE="$(which qmake6 2>/dev/null || which qmake)"
 # already optimized by CMake (-O2).
 export NO_STRIP=1
 
+# ── Stub out missing Qt plugin dependencies ───────────────────────────────────
+# linuxdeploy-plugin-qt fails hard when any Qt plugin has an unresolvable
+# transitive dep (e.g. kimg_jxr.so needs libjxrglue.so.0 which isn't installed).
+# Strategy:
+#   1. Scan ALL Qt plugins for missing libs and create minimal ELF stubs.
+#   2. Prepend stub dir to LD_LIBRARY_PATH so linuxdeploy's ldd checks pass.
+#   3. After deployment, remove every AppDir plugin that still has unresolved
+#      deps (those that pulled in stubs) and remove the stubs themselves.
+STUB_DIR="$(mktemp -d)"
+QTPLUG_SCAN="$("${QMAKE}" -query QT_INSTALL_PLUGINS)"
+
+echo "Scanning Qt plugins for unresolvable dependencies..."
+declare -A _SEEN_STUBS
+while IFS= read -r so; do
+    while IFS= read -r libname; do
+        [ -z "$libname" ] && continue
+        if [ -z "${_SEEN_STUBS[$libname]+x}" ]; then
+            _SEEN_STUBS["$libname"]=1
+            # Minimal ELF shared-object stub: satisfies ldd without real symbols
+            printf 'void __stub_init(void) {}\n' \
+                | gcc -x c - -shared -fPIC -Wl,-soname,"${libname}" \
+                      -o "${STUB_DIR}/${libname}" 2>/dev/null \
+                && echo "  Stub: ${libname}"
+        fi
+    done < <(ldd "${so}" 2>&1 | awk '/not found/{print $1}')
+done < <(find "${QTPLUG_SCAN}" -name "*.so" 2>/dev/null)
+
+export LD_LIBRARY_PATH="${STUB_DIR}${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+
 "$LINUXDEPLOY" \
     --appdir "$APPDIR" \
     --executable "$APPDIR/usr/bin/DockerBento" \
     --plugin qt
+
+# ── Remove stub-dependent plugins from AppDir ─────────────────────────────────
+# After deployment, any plugin that depends on one of our stubs (and nothing
+# else provides that library on the target system) would be broken at runtime.
+# Remove them — they are optional KDE/Plasma extras, not needed by DockerBento.
+echo "Removing AppDir plugins with unresolvable dependencies..."
+while IFS= read -r so; do
+    # Check without our stub LD_LIBRARY_PATH
+    missing=$(LD_LIBRARY_PATH="" ldd "${so}" 2>&1 | awk '/not found/{print $1}' | tr '\n' ' ')
+    if [ -n "$missing" ]; then
+        echo "  Removing $(basename "${so}"): needs ${missing}"
+        rm "${so}"
+    fi
+done < <(find "${APPDIR}/usr/plugins" -name "*.so" 2>/dev/null)
+
+# Remove stub .so files that linuxdeploy copied into AppDir/usr/lib
+for stub in "${STUB_DIR}"/*.so* "${STUB_DIR}"/*.so; do
+    [ -f "$stub" ] || continue
+    name="$(basename "${stub}")"
+    [ -f "${APPDIR}/usr/lib/${name}" ] && rm "${APPDIR}/usr/lib/${name}" && echo "  Removed stub copy: ${name}"
+done
 
 # ── Add Wayland platform plugin (linuxdeploy-plugin-qt skips it) ──────────────
 # linuxdeploy-plugin-qt only deploys the platform plugin that matches the

@@ -155,4 +155,51 @@ void DockerClient::streamGet(const QString &path, StreamCallback callback)
     socket->connectToServer(m_socketPath);
 }
 
+void DockerClient::streamPost(const QString &path, const QByteArray &body, StreamCallback callback)
+{
+    auto *socket       = new QLocalSocket(this);
+    auto *buffer       = new QByteArray();
+    auto *headersParsed = new bool(false);
+
+    connect(socket, &QLocalSocket::connected, this, [socket, path, body]() {
+        QByteArray req;
+        req += "POST " + path.toUtf8() + " HTTP/1.1\r\n";
+        req += "Host: localhost\r\n";
+        req += "Accept: application/json\r\n";
+        req += "Content-Type: application/json\r\n";
+        req += "Content-Length: " + QByteArray::number(body.size()) + "\r\n";
+        req += "Connection: close\r\n\r\n";
+        req += body;
+        socket->write(req);
+    });
+
+    connect(socket, &QLocalSocket::readyRead, this, [socket, buffer, headersParsed, callback]() {
+        buffer->append(socket->readAll());
+        if (!*headersParsed) {
+            int headerEnd = buffer->indexOf("\r\n\r\n");
+            if (headerEnd < 0) return;
+            *buffer = buffer->mid(headerEnd + 4);
+            *headersParsed = true;
+        }
+        while (true) {
+            int nl = buffer->indexOf('\n');
+            if (nl < 0) break;
+            QString line = QString::fromUtf8(buffer->left(nl)).trimmed();
+            *buffer = buffer->mid(nl + 1);
+            if (!line.isEmpty()) callback(line, false);
+        }
+    });
+
+    connect(socket, &QLocalSocket::disconnected, this, [socket, buffer, headersParsed, callback]() {
+        if (!buffer->isEmpty())
+            callback(QString::fromUtf8(*buffer), false);
+        callback({}, true);
+        delete buffer;
+        delete headersParsed;
+        socket->deleteLater();
+    });
+
+    socket->connectToServer(m_socketPath);
+}
+
 } // namespace Core
